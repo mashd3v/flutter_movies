@@ -11,11 +11,12 @@ class CardSwiper extends StatelessWidget {
     final _screenSize = MediaQuery.of(context).size;
 
     return Container(
-      padding: EdgeInsets.only(top:13.0),
+      height: _screenSize.height * 0.5,
       child: Swiper(
-        layout: SwiperLayout.STACK,
-        itemWidth: _screenSize.width * 0.7,
-        itemHeight: _screenSize.height * 0.5,
+        layout: SwiperLayout.CUSTOM,
+        duration: 800,
+        itemWidth: _screenSize.width * 0.6,
+        itemHeight: _screenSize.height * 0.45,
         itemBuilder: (BuildContext context, int index) {
           movies[index].uniqueId = '${movies[index].id}-card';
           return Hero(
@@ -23,17 +24,31 @@ class CardSwiper extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(17.0),
               child: GestureDetector(
-                onTap: () => Navigator.pushNamed(context, 'detail', arguments: movies[index]),
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  'detail',
+                  arguments: movies[index],
+                ),
                 child: FadeInImage(
-                  placeholder: AssetImage('assets/img/loading.gif'), 
+                  placeholder: AssetImage('assets/img/loading.gif'),
                   image: NetworkImage(movies[index].getPosterImage()),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-          );           
+          );
         },
         itemCount: movies.length,
+        customLayoutOption: new CustomLayoutOption(
+          startIndex: -1,
+          stateCount: 3,
+        ).addRotate([-40.0 / 180, 0.0, 40.0 / 180]).addTranslate(
+          [
+            new Offset(-280.0, -45.0),
+            new Offset(0.0, 0.0),
+            new Offset(280.0, -45.0),
+          ],
+        ),
       ),
     );
   }

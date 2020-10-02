@@ -2,181 +2,286 @@ import 'package:flutter/material.dart';
 import 'package:movies/src/models/cast_model.dart';
 import 'package:movies/src/models/movie_model.dart';
 import 'package:movies/src/providers/movies_provider.dart';
+import 'package:movies/src/widgets/cast_landscape.dart';
 
-class MovieDetail extends StatelessWidget { 
+class MovieDetail extends StatelessWidget {
+  final actor = new Actor();
+  final movieProvider = new MoviesProvider();
   @override
   Widget build(BuildContext context) {
     final Movie movie = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          _appBar(movie),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                SizedBox(height: 9.0,),
-                _posterTitle(context, movie),
-                _description(context, movie),
-                _description(context, movie),
-                _description(context, movie),
-                _description(context, movie),
-                Container(
-                  padding: EdgeInsets.only(left: 17.0),
-                  child: Text('Cast:', style: Theme.of(context).textTheme.subtitle2),
+      body: Column(
+        children: [
+          Stack(
+            children: [
+              _backgroundPoster(movie),
+              _movieInfo(context, movie),
+              _mainPoster(movie),
+              _backButton(context),
+            ],
+          ),
+          SizedBox(
+            height: 23.0,
+          ),
+          Expanded(
+            child: ScrollConfiguration(
+              behavior: ScrollBehavior(),
+              child: GlowingOverscrollIndicator(
+                axisDirection: AxisDirection.down,
+                color: Colors.yellow[700],
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(left: 17.0),
+                            child: Text(
+                              'Introduction',
+                              style: TextStyle(
+                                fontSize: 23.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          _description(context, movie),
+                          _description(context, movie),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 27.0,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(left: 17.0),
+                            child: Text(
+                              'Cast',
+                              style: TextStyle(
+                                fontSize: 23.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 13.0,
+                          ),
+                          _footer(context, actor, movie),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-                SizedBox(height: 13.0,),
-                _cast(movie)
-              ]
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _appBar(Movie movie){
-    return SliverAppBar(
-      elevation: 1.0,
-      backgroundColor: Colors.black,
-      expandedHeight: 200.0,
-      floating: false,
-      pinned: true,
-      flexibleSpace: FlexibleSpaceBar(
-        centerTitle: true,
-        title: Text(
-          movie.title,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 17.0
-          ),
-        ),
-        background: FadeInImage(
-          placeholder: AssetImage('assets/img/loading.gif'), 
-          image: NetworkImage(movie.getBackgroundImage()),  
-          fadeInDuration: Duration(milliseconds:150),
+  Widget _backgroundPoster(Movie movie) {
+    return Container(
+      height: 230.0,
+      width: double.infinity,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30.0),
+        child: Image(
+          image: NetworkImage(movie.getBackgroundImage()),
           fit: BoxFit.cover,
         ),
       ),
     );
   }
 
-  Widget _posterTitle(BuildContext context, Movie movie){
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 17.0),
-      child: Row(
-        children: <Widget>[
-          Hero(
-            tag: movie.uniqueId,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(17.0),
-              child: Image(
-                image: NetworkImage(movie.getPosterImage()),
-                height: 150.0,
-              ),
+  Widget _mainPoster(Movie movie) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(0.0, 170.0, 0.0, 0.0),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 17.0),
+        child: Hero(
+          tag: movie.uniqueId,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(17.0),
+            child: Image(
+              image: NetworkImage(movie.getPosterImage()),
+              height: 150.0,
             ),
           ),
-          SizedBox(width: 17.0,),
-          Flexible(
-            child: Column(
+        ),
+      ),
+    );
+  }
+
+  Widget _movieInfo(BuildContext context, Movie movie) {
+    return Padding(
+      padding: EdgeInsets.only(top: 190),
+      child: Container(
+        // color: Colors.white,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(17.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              offset: Offset(0.0, 2.0),
+              blurRadius: 5.0,
+            ),
+          ],
+          color: Colors.white,
+        ),
+        padding: EdgeInsets.fromLTRB(130.0, 10.0, 5.0, 0.0),
+        height: 130.0,
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              movie.title,
+              style: Theme.of(context).textTheme.headline5,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              'Original Title: ${movie.originalTitle}',
+              style: Theme.of(context).textTheme.subtitle1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            SizedBox(
+              height: 13.0,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(movie.title, style: Theme.of(context).textTheme.headline5, overflow: TextOverflow.ellipsis,),
-                Text(movie.originalTitle, style: Theme.of(context).textTheme.subtitle1, overflow: TextOverflow.ellipsis),
-                SizedBox(height: 13.0,),               
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                Column(
                   children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Text('Rating:', style: Theme.of(context).textTheme.subtitle2),
-                        Row(
-                          children: <Widget>[
-                            Icon(Icons.star_border),
-                            Text(movie.voteAverage.toString(), style: Theme.of(context).textTheme.subtitle1)
-                          ],
-                        )
-                      ],
+                    Text(
+                      'Rating:',
+                      style: Theme.of(context).textTheme.subtitle2,
                     ),
-                    SizedBox(width: 55.0,),
-                    Column(
-                      children: <Widget>[
-                        Text('Release Date:', style: Theme.of(context).textTheme.subtitle2),
-                        Row(
-                          children: <Widget>[
-                            Text(movie.releaseDate, style: Theme.of(context).textTheme.subtitle1)
-                          ],
-                        )
-                      ],
+                    SizedBox(
+                      height: 5.0,
                     ),
-                    SizedBox(width: 30.0,)
+                    Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.stars,
+                          color: Colors.yellow[700],
+                        ),
+                        SizedBox(
+                          width: 3.0,
+                        ),
+                        Text(
+                          movie.voteAverage.toString(),
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),
+                      ],
+                    )
                   ],
-                ),                
+                ),
+                Column(
+                  children: <Widget>[
+                    Text(
+                      'Release Date:',
+                      style: Theme.of(context).textTheme.subtitle2,
+                    ),
+                    SizedBox(
+                      height: 7.0,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Text(
+                          movie.releaseDate,
+                          style: Theme.of(context).textTheme.subtitle1,
+                        )
+                      ],
+                    )
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(
+                      'Language:',
+                      style: Theme.of(context).textTheme.subtitle2,
+                    ),
+                    SizedBox(
+                      height: 7.0,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Text(movie.originalLanguage.toUpperCase(),
+                            style: Theme.of(context).textTheme.subtitle1)
+                      ],
+                    )
+                  ],
+                ),
               ],
             ),
-          )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _backButton(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: 10.0,
+        vertical: 40.0,
+      ),
+      child: IconButton(
+        icon: Icon(Icons.arrow_back),
+        iconSize: 30.0,
+        color: Colors.white,
+        onPressed: () => Navigator.pop(context),
+      ),
+    );
+  }
+
+  Widget _description(BuildContext context, Movie movie) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 17.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 17.0,
+          ),
+          Text(
+            movie.overview,
+            textAlign: TextAlign.justify,
+            style: Theme.of(context).textTheme.bodyText2,
+          ),
         ],
       ),
     );
   }
 
-  Widget _description(BuildContext context, Movie movie){
+  Widget _footer(BuildContext context, Actor actor, Movie movie) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 11.0, vertical: 17.0),
-      child: Text(
-        movie.overview,
-        textAlign: TextAlign.justify,
-        style: Theme.of(context).textTheme.bodyText2
-      ),
-    );
-  }
-
-  Widget _cast(movie){
-    final movieProvider = new MoviesProvider();
-    return FutureBuilder(
-      future: movieProvider.getCast(movie.id.toString()),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if(snapshot.hasData){
-          return _actorsPageView(snapshot.data);
-        } else{
-          return Center(child:CircularProgressIndicator());
-        }
-      },
-    );
-  }
-
-  Widget _actorsPageView(List<Actor> actors){
-    return SizedBox(
-      height: 200.0,
-      child: PageView.builder(
-        pageSnapping: false,
-        controller: PageController(
-          viewportFraction: 0.3,
-          initialPage: 1
-        ),
-        itemCount: actors.length,       
-        itemBuilder: (context, i) => _actorCard(actors[i]),
-      ),
-    );
-  }
-
-  Widget _actorCard(Actor actor){
-    return Container(
+      width: double.infinity,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(17.0),
-            child: FadeInImage(
-              placeholder: AssetImage('assets/img/no_image.jpg'), 
-              image: NetworkImage(actor.getPhoto()),
-              height: 150.0,
-              fit: BoxFit.cover,
-            ),
+          SizedBox(height: 5.0),
+          FutureBuilder(
+            future: movieProvider.getCast(movie.id.toString()),
+            builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+              if (snapshot.hasData) {
+                return CastLandscape(
+                  actor: snapshot.data,
+                  nextPage: movieProvider.getCast,
+                );
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
           ),
-          Text(
-            actor.name,
-            overflow: TextOverflow.ellipsis,
-          )
         ],
       ),
     );

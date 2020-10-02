@@ -13,16 +13,27 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         elevation: 0.0,
         title: Center(
-          child: Text('In Cinema', style: TextStyle(color: Colors.black, fontSize: 25.0)),
+          child: Text(
+            'Now Playing',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 25.0,
+            ),
+          ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.yellow[700],
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.search, color: Colors.black,), onPressed: () {
-            showSearch(
-              context: context, 
-              delegate: DataSearch(),
-            );
-          })
+          IconButton(
+              icon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: DataSearch(),
+                );
+              })
         ],
       ),
       body: Container(
@@ -44,7 +55,11 @@ class HomePage extends StatelessWidget {
           );
         } else {
           return Container(
-              height: 400.0, child: Center(child: CircularProgressIndicator()));
+            height: 400.0,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
       },
     );
@@ -58,10 +73,17 @@ class HomePage extends StatelessWidget {
         children: <Widget>[
           Container(
             padding: EdgeInsets.only(left: 17.0),
-            child: Text('Populars', style: Theme.of(context).textTheme.subtitle1),
+            child: Text(
+              'Populars',
+              style: TextStyle(
+                color: Colors.yellow[700],
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           SizedBox(
-            height: 13.0,
+            height: 23.0,
           ),
           StreamBuilder(
             stream: moviesProvider.popularsStream,
@@ -76,7 +98,7 @@ class HomePage extends StatelessWidget {
               }
             },
           ),
-        ]
+        ],
       ),
     );
   }

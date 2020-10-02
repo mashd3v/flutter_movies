@@ -21,12 +21,12 @@ class MovieLandscape extends StatelessWidget {
 
     return Container(
       height: _screenSize.height * 0.25,
-      child: PageView.builder(
+      child: PageView.builder(        
         pageSnapping: false,
         controller: _pageController,
         itemCount: movies.length,
         itemBuilder: (context, i) => _card(context, movies[i]),
-      ) // children: _cards(context)),
+      ),// children: _cards(context)),
     );
   }
 
@@ -38,14 +38,14 @@ class MovieLandscape extends StatelessWidget {
         children: <Widget>[
           Hero(
             tag: movie.uniqueId,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(17.0),
-                child: FadeInImage(
-                  placeholder: AssetImage('assets/img/no_image.jpg'),
-                  image: NetworkImage(movie.getPosterImage()),
-                  fit: BoxFit.contain,
-                  height: 160.0,
-                ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(17.0),
+              child: FadeInImage(
+                placeholder: AssetImage('assets/img/no_image.jpg'),
+                image: NetworkImage(movie.getPosterImage()),
+                fit: BoxFit.contain,
+                height: 160.0,
+              ),
             ),
           ),
           SizedBox(
@@ -61,38 +61,9 @@ class MovieLandscape extends StatelessWidget {
     );
     return GestureDetector(
       child: card,
-      onTap: (){
+      onTap: () {
         Navigator.pushNamed(context, 'detail', arguments: movie);
       },
-    ); 
-  }
-
-  List<Widget> _cards(BuildContext context) {
-    return movies.map((movie) {
-      return Container(
-        margin: EdgeInsets.only(right: 13.0),
-        child: Column(
-          children: <Widget>[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(17.0),
-              child: FadeInImage(
-                placeholder: AssetImage('assets/img/no_image.jpg'),
-                image: NetworkImage(movie.getPosterImage()),
-                fit: BoxFit.contain,
-                height: 160.0,
-              ),
-            ),
-            SizedBox(
-              height: 5.0,
-            ),
-            Text(
-              movie.title,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.caption,
-            )
-          ],
-        ),
-      );
-    }).toList();
+    );
   }
 }
